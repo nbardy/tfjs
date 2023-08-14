@@ -419,6 +419,23 @@ export class MathBackendWebGL extends KernelBackend {
     return dTypeVals;
   }
 
+  readToRenderBuffer(dataId: DataId): WebGLBuffer {
+    const texData = this.texData.get(dataId);
+    const {texture, texShape} = texData;
+  
+    if (texture == null) {
+      throw new Error('There is no data on GPU.');
+    }
+  
+    // Create a WebGL buffer
+    const buffer = gl.createBuffer();
+    gl.bindBuffer(gl.PIXEL_PACK_BUFFER, buffer);
+    gl.bufferData(gl.PIXEL_PACK_BUFFER, texShape[0] * texShape[1] * 4, gl.STATIC_READ);
+  
+    return buffer;
+  }
+
+
   /**
    * Read tensor to a new texture that is densely packed for ease of use.
    * @param dataId The source tensor.
